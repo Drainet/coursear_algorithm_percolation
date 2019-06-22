@@ -15,6 +15,8 @@ public class Percolation {
 
     private final GridPosition[][] grid;
 
+    private int openSiteCount = 0;
+
     public Percolation(int n) {
         grid = new GridPosition[n][n];
     }
@@ -23,6 +25,9 @@ public class Percolation {
         if (grid[row][col] != null) {
             return;
         }
+
+        openSiteCount++;
+
         GridPosition currentPosition = new GridPosition(row, col);
         grid[row][col] = currentPosition;
         if (row > 0 && grid[row - 1][col] != null) {
@@ -61,8 +66,7 @@ public class Percolation {
     }
 
     public int numberOfOpenSites() {
-        // number of open sites
-        return 0;
+        return openSiteCount;
     }
 
     public boolean percolates() {
