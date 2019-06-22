@@ -1,72 +1,92 @@
 public class Percolation {
 
-    private static GridPosition topPosition = new GridPosition(-1, -1);
-    private static GridPosition bottomPosition = new GridPosition(-2, -2);
-
-    private static class GridPosition {
-        final int row;
-        final int col;
-
-        GridPosition(int row, int col) {
-            this.row = row;
-            this.col = col;
-        }
-    }
-
-    private final GridPosition[][] grid;
+    private final int[] grid;
 
     private int openSiteCount = 0;
 
+    private final int topIndex;
+    private final int bottomIndex;
+    private final int gridWidth;
+
     public Percolation(int n) {
-        grid = new GridPosition[n][n];
+        // add extra 2 slots for top and bottom position
+        int gridSize = n * n + 2;
+        grid = new int[gridSize];
+        gridWidth = n;
+        topIndex = gridSize - 1;
+        bottomIndex = gridSize - 2;
+        for (int i = 0; i < gridSize; i++) {
+            grid[i] = -1;
+        }
+        grid[topIndex] = topIndex;
+        grid[bottomIndex] = bottomIndex;
     }
 
     public void open(int row, int col) {
-        if (grid[row][col] != null) {
+        row--;
+        col--;
+        int currentIndex = row * gridWidth + col;
+        if (grid[currentIndex] != -1) {
             return;
         }
 
         openSiteCount++;
 
-        GridPosition currentPosition = new GridPosition(row, col);
-        grid[row][col] = currentPosition;
-        if (row > 0 && grid[row - 1][col] != null) {
-            connect(currentPosition, new GridPosition(row - 1, col));
+        grid[currentIndex] = currentIndex;
+        int aboveIndex = currentIndex - gridWidth;
+        if (row > 0 && grid[aboveIndex] != -1) {
+            connect(currentIndex, aboveIndex);
         }
-        if (row < grid.length - 1 && grid[row + 1][col] != null) {
-            connect(currentPosition, new GridPosition(row + 1, col));
+        int underIndex = currentIndex + gridWidth;
+        if (row < gridWidth - 1 && grid[currentIndex + gridWidth] != -1) {
+            connect(currentIndex, underIndex);
         }
-        if (col > 0 && grid[row][col - 1] != null) {
-            connect(currentPosition, new GridPosition(row, col - 1));
+        int leftIndex = currentIndex - 1;
+        if (col > 0 && grid[leftIndex] != -1) {
+            connect(currentIndex, leftIndex);
         }
-        if (col < grid[row].length - 1 && grid[row][col + 1] != null) {
-            connect(currentPosition, new GridPosition(row, col + 1));
+        int rightIndex = currentIndex + 1;
+        if (col < gridWidth - 1 && grid[rightIndex] != -1) {
+            connect(currentIndex, rightIndex);
         }
         if (row == 0) {
-            connect(currentPosition, topPosition);
+            connect(currentIndex, topIndex);
         }
-        if (row == grid.length - 1) {
-            connect(currentPosition, bottomPosition);
+        if (row == gridWidth - 1) {
+            connect(currentIndex, bottomIndex);
         }
     }
 
-    private void connect(GridPosition first, GridPosition second) {
-        //TODO
+    private void connect(int firstIndex, int secondIndex) {
+        int firstRoot = getRoot(firstIndex);
+        int secondRoot = getRoot(secondIndex);
+        if (firstRoot != secondRoot) {
+            grid[secondRoot] = firstRoot;
+        }
     }
 
-    private void getRoot(GridPosition position) {
-
+    private int getRoot(int index) {
+        int result = index;
+        while (grid[result] != result) {
+            result = grid[result];
+        }
+        return result;
     }
 
     public boolean isOpen(int row, int col) {
-        return grid[row][col] == null;
+        row--;
+        col--;
+        return grid[row * gridWidth + col] != -1;
     }
 
     public boolean isFull(int row, int col) {
-        if (grid[row][col] == null) {
+        row--;
+        col--;
+        int currentIndex = row * gridWidth + col;
+        if (grid[currentIndex] == -1) {
             return false;
         }
-        return false;
+        return getRoot(currentIndex) == getRoot(topIndex);
     }
 
     public int numberOfOpenSites() {
@@ -74,11 +94,9 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        // does the system percolate?
-        return false;
+        return getRoot(topIndex) == getRoot(bottomIndex);
     }
 
     public static void main(String[] args) {
-        // test client (optional)
     }
 }
