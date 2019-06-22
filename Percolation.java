@@ -1,19 +1,62 @@
 public class Percolation {
+
+    private static GridPosition topPosition = new GridPosition(-1, -1);
+    private static GridPosition bottomPosition = new GridPosition(-2, -2);
+
+    private static class GridPosition {
+        final int row;
+        final int col;
+
+        GridPosition(int row, int col) {
+            this.row = row;
+            this.col = col;
+        }
+    }
+
+    private final GridPosition[][] grid;
+
     public Percolation(int n) {
-        // create n-by-n grid, with all sites blocked
+        grid = new GridPosition[n][n];
     }
 
     public void open(int row, int col) {
-        // open site (row, col) if it is not open already
+        if (grid[row][col] != null) {
+            return;
+        }
+        GridPosition currentPosition = new GridPosition(row, col);
+        grid[row][col] = currentPosition;
+        if (row > 0 && grid[row - 1][col] != null) {
+            connect(currentPosition, new GridPosition(row - 1, col));
+        }
+        if (row < grid.length - 1 && grid[row + 1][col] != null) {
+            connect(currentPosition, new GridPosition(row + 1, col));
+        }
+        if (col > 0 && grid[row][col - 1] != null) {
+            connect(currentPosition, new GridPosition(row, col - 1));
+        }
+        if (col < grid[row].length - 1 && grid[row][col + 1] != null) {
+            connect(currentPosition, new GridPosition(row, col + 1));
+        }
+        if (row == 0) {
+            connect(currentPosition, topPosition);
+        }
+        if (row == grid.length - 1) {
+            connect(currentPosition, bottomPosition);
+        }
+    }
+
+    private void connect(GridPosition first, GridPosition second) {
+        //TODO
     }
 
     public boolean isOpen(int row, int col) {
-        // is site (row, col) open?
-        return false;
+        return grid[row][col] == null;
     }
 
     public boolean isFull(int row, int col) {
-        // is site (row, col) full?
+        if (grid[row][col] == null) {
+            return false;
+        }
         return false;
     }
 
