@@ -54,6 +54,10 @@ public class Percolation {
         //TODO
     }
 
+    private void getRoot(GridPosition position) {
+
+    }
+
     public boolean isOpen(int row, int col) {
         return grid[row][col] == null;
     }
